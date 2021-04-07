@@ -14,9 +14,28 @@ let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 25
 
+function s:refreshNetrwExplorer()
+	if expand('%') == 'NetrwTreeListing'
+		exe winnr() . "wincmd q"
+		:Vexplore
+	endif
+endfunction
+
+function New_file_leader()
+	echo expand('%:h')
+	let new_file_name = input("New file name: " . expand('%:h') . "/")
+	echo "\n"
+	echo expand('%:h') . "/" . new_file_name . "\n"
+	call system("touch " . expand('%:h') . "/" . new_file_name)
+endfunction
+
+nmap <leader>nf :call New_file_leader()<cr>
+nmap <leader>rrc :so $MYVIMRC<cr>
+
 augroup Vide
   autocmd!
   autocmd VimEnter * :Vexplore
+  autocmd BufEnter * call s:refreshNetrwExplorer()
 augroup END
 
 " Plugins

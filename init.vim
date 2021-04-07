@@ -14,12 +14,6 @@ let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 25
 
-function s:refreshNetrwExplorer()
-	if expand('%') == 'NetrwTreeListing'
-		exe winnr() . "wincmd q"
-		:Vexplore
-	endif
-endfunction
 
 function New_file_leader()
 	echo expand('%:h')
@@ -35,12 +29,13 @@ nmap <leader>rrc :so $MYVIMRC<cr>
 augroup Vide
   autocmd!
   autocmd VimEnter * :Vexplore
-  autocmd BufEnter * call s:refreshNetrwExplorer()
 augroup END
 
 " Plugins
 call plug#begin('~/.local/share/nvim/site/plugin')
 Plug 'editorconfig/editorconfig-vim'
-"Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-vinegar'
+Plug 'preservim/nerdtree'
 call plug#end()
 

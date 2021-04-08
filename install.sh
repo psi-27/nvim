@@ -1,41 +1,37 @@
 #!/usr/bin/env bash
 
-declare -A osInfo;
-osInfo[/etc/redhat-release]=yum
-osInfo[/etc/arch-release]=pacman
-osInfo[/etc/gentoo-release]=emerge
-osInfo[/etc/SuSE-release]=zypp
-osInfo[/etc/debian_version]=apt-get
+(
+    declare -A osInfo;
+    osInfo[/etc/redhat-release]=yum
+    osInfo[/etc/arch-release]=pacman
+    osInfo[/etc/gentoo-release]=emerge
+    osInfo[/etc/SuSE-release]=zypp
+    osInfo[/etc/debian_version]=apt-get
 
-declare -A pmCmd;
-pmCmd[apt-get]="apt-get install -y"
+    declare -A installCmd;
+    installCmd[apt-get]="apt-get install -y"
 
-package_manager=''
+    package_manager=''
+    nvim_config_dir="${HOME}/.config/nvim"
+    script_dir="$(dirname $(realpath "${BASH_SOURCE[0]}"))"
 
-for f in ${!osInfo[@]}
-do
-    if [[ -f $f ]];then
-        echo Package manager: ${osInfo[$f]}
-        package_manager="${osInfo[$f]}"
+    for f in ${!osInfo[@]}
+    do
+        if [[ -f $f ]];then
+            echo Package manager: ${osInfo[$f]}
+            package_manager="${osInfo[$f]}"
+        fi
+    done
+
+    if [[ -z "$(which nvim)" ]];then sudo ${installCmd[${package_manager}]} neovim; fi
+
+
+    if [[ ! -d "${nvim_config_dir}" ]];then
+        mkdir -p "${nvim_config_dir}"
     fi
-done
 
-if [[ -z "$(which nvim)" ]];then sudo ${pmCmd[${package_manager}]} neovim; fi
+    mkdir "${nvim_config_dir}/vim-plug-root"
 
-echo $(dirname $(realpath "${BASH_SOURCE[0]}"))"/autoload"
-echo ${HOME}"/.local/nvim/site"
-
-
-
-if [[ ! -d ${HOME}"/.local/share/nvim/site" ]];then
-    mkdir -p ${HOME}"/.local/share/nvim/site"
-fi
-
-cp -rv $(dirname $(realpath "${BASH_SOURCE[0]}"))"/autoload" ${HOME}"/.local/share/nvim/site/"
-
-
-if [[ ! -d ${HOME}"/.config/nvim" ]];then
-    mkdir -p ${HOME}"/.config/nvim"
-fi
-
-cp -rv $(dirname $(realpath "${BASH_SOURCE[0]}"))"/init.vim" ${HOME}"/.config/nvim"
+    cp -rv "${script_dir}/autoload" "${nvim_config_dir}/"
+    cp -rv "${script_dir}/init.vim" "${nvim_config_dir}/"
+)

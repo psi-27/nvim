@@ -3,13 +3,22 @@ set nocompatible
 set t_Co=256
 set number
 set ruler
+set autoread
 syntax on
 
 " Plugins
 call plug#begin('~/.config/nvim/vim-plug-root')
 Plug 'preservim/nerdtree'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'djoshea/vim-autoread'
+Plug 'ludovicchabant/vim-gutentags'
 call plug#end()
+
+" @see https://github.com/ludovicchabant/vim-gutentags/blob/master/doc/gutentags.txt
+let g:gutentags_project_root = ['.tags']
+let g:gutentags_ctags_tagfile = '.tags'
+let g:gutentags_add_ctrlp_root_markers = 0
+set statusline+=%{gutentags#statusline()}
 
 " Functions
 function New_file_leader()
@@ -33,4 +42,3 @@ augroup Vide
   autocmd!
   autocmd VimEnter * :NERDTree
 augroup END
-

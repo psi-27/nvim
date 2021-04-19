@@ -4,6 +4,8 @@ set t_Co=256
 set number
 set ruler
 set autoread
+set encoding=utf-8
+set fileencoding=utf-8
 syntax on
 
 " Plugins
@@ -29,6 +31,31 @@ function New_file_leader()
 	call system("touch " . expand('%:h') . "/" . new_file_name)
 endfunction
 
+function! ToggleSyntax()
+"	exists("g:syntax_on") ? syntax off : syntax enable
+	if exists("g:syntax_on")
+		syntax off
+	else
+		syntax enable
+	endif
+	echo "Hightlight" . (exists("g:syntax_on") ? " is on" : " is off")
+endfunction
+
+
+function! AppendComment(comment, ...)
+	let leader = a:0 >= 1 ? a:1 : '//'
+	let box_char = a:0 >= 2 ? a:2 : '*'
+	let width = a:0 >= 3 ? a:3 : strlen(a:comment)
+	let boundary = leader . repeat(box_char, width)
+	let app = append(line('.')-1, [boundary, leader . ' ' . a:comment, boundary])
+	return ''
+endfunction
+
+imap <silent> """ <C-R>=AppendComment(input("Comment text: "), '"')<CR> | "Comment append shortcut
+
+function StudyTest()
+	call ToggleSyntax()
+endfunction
 
 " Maps
 nnoremap <leader>n :NERDTreeFocus<CR>
@@ -37,10 +64,14 @@ nnoremap <C-n> :NERDTreeToggle<CR>
 
 nnoremap <leader>nf :call New_file_leader()<CR>
 nnoremap <leader>rrc :so $MYVIMRC<CR>
+nnoremap <leader>tm :call StudyTest()<CR>
+
+" Short note StdinReadPre calls only if nvim ran with '-' option
+autocmd StdinReadPre * let g:std_in=1
 
 augroup Vide
   autocmd!
-  autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+  autocmd VimEnter * if argc() == 0 && !exists("g:std_in") | NERDTree | endif
+  nmap <silent> ;s :call ToggleSyntax()<CR>
+  autocmd BufWritePost $MYVIMRC source $MYVIMRC
 augroup END
-
